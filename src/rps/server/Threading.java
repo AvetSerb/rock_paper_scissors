@@ -1,4 +1,4 @@
-package rps;
+package rps.server;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutorService;
@@ -6,7 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 public final class Threading {
-    private Threading() {}
+    private Threading() {
+    }
 
     public static ExecutorService clientExecutor(ThreadFactory fallbackFactory) {
         ExecutorService vt = tryVirtualThreadPerTaskExecutor();

@@ -1,4 +1,6 @@
-package rps;
+package rps.players;
+
+import rps.enam.Step;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
@@ -8,20 +10,22 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class Player {
-    private final String nick;
+    private final String nickName;
     private final BufferedReader in;
     private final PrintWriter out;
     private final Socket socket;
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
     public Player(String nick, BufferedReader in, PrintWriter out, Socket socket) {
-        this.nick = Objects.requireNonNull(nick);
+        this.nickName = Objects.requireNonNull(nick);
         this.in = Objects.requireNonNull(in);
         this.out = Objects.requireNonNull(out);
         this.socket = Objects.requireNonNull(socket);
     }
 
-    public String nick() { return nick; }
+    public String nick() {
+        return nickName;
+    }
 
     public void send(String msg) {
         if (closed.get()) return;
@@ -34,7 +38,10 @@ public final class Player {
 
     public void closeQuietly() {
         if (!closed.compareAndSet(false, true)) return;
-        try { socket.close(); } catch (Exception ignored) {}
+        try {
+            socket.close();
+        } catch (Exception ignored) {
+        }
     }
 
     public CompletableFuture<Step> readMoveAsync() {

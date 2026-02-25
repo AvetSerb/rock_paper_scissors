@@ -1,4 +1,4 @@
-package rps;
+package rps.enam;
 
 import java.util.Locale;
 

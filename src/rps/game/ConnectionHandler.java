@@ -1,4 +1,6 @@
-package rps;
+package rps.game;
+
+import rps.players.Player;
 
 import java.io.*;
 import java.net.Socket;
@@ -25,13 +27,18 @@ public final class ConnectionHandler implements Runnable {
             String nick = readNonEmptyLine(in);
             if (nick == null) return;
 
+            try {
+                validateNickname(nick.trim());
+            } catch (InvalidNicknameException e) {
+                out.println("Error: " + e.getMessage() + ". Please reconnect with a valid nickname.");
+                return;
+            }
+
             Player player = new Player(nick.trim(), in, out, socket);
             out.println("Hi, " + player.nick() + "! Waiting for an opponent...");
 
             matchMaker.enqueue(player);
 
-            // From here matchmaker/session will drive the rest.
-            // We just keep this thread alive until socket closes.
             while (!socket.isClosed()) {
                 try {
                     Thread.sleep(250);
@@ -41,7 +48,18 @@ public final class ConnectionHandler implements Runnable {
                 }
             }
         } catch (IOException e) {
-            // normal on disconnect
+        }
+    }
+
+    public static class InvalidNicknameException extends Exception {
+        public InvalidNicknameException(String message) {
+            super(message);
+        }
+    }
+
+    private static void validateNickname(String nick) throws InvalidNicknameException {
+        if (nick.matches(".*[.,!?;:\"'()\\[\\]{}\\\\/].*")) {
+            throw new InvalidNicknameException("Nickname cannot contain punctuation marks");
         }
     }
 

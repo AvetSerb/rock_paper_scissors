@@ -1,5 +1,8 @@
 package rps;
 
+import rps.server.Arguments;
+import rps.server.Server;
+
 import java.io.IOException;
 
 public final class Main {
@@ -9,6 +12,6 @@ public final class Main {
         Runtime.getRuntime().addShutdownHook(new Thread(server::stop, "shutdown-hook"));
 
         System.out.println("RPS server listening on 0.0.0.0:" + port);
-        server.start(); // blocking
+        server.start();
     }
 }

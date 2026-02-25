@@ -1,9 +1,12 @@
-package rps;
+package rps.session;
+
+import rps.players.Player;
+import rps.enam.Step;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-public final class GameSession implements Runnable{
+public final class GameSession implements Runnable {
     private final Player p1;
     private final Player p2;
 
@@ -78,8 +81,16 @@ public final class GameSession implements Runnable{
     }
 
     private record RoundResult(boolean draw, boolean p1Wins, Step p1Step, Step p2Step) {
-        static RoundResult draw(Step a, Step b) { return new RoundResult(true, false, a, b); }
-        static RoundResult p1wins(Step a, Step b) { return new RoundResult(false, true, a, b); }
-        static RoundResult p2wins(Step a, Step b) { return new RoundResult(false, false, a, b); }
+        static RoundResult draw(Step a, Step b) {
+            return new RoundResult(true, false, a, b);
+        }
+
+        static RoundResult p1wins(Step a, Step b) {
+            return new RoundResult(false, true, a, b);
+        }
+
+        static RoundResult p2wins(Step a, Step b) {
+            return new RoundResult(false, false, a, b);
+        }
     }
 }

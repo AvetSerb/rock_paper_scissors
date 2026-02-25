@@ -1,4 +1,7 @@
-package rps;
+package rps.game;
+
+import rps.session.GameSession;
+import rps.players.Player;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -35,8 +38,14 @@ public final class MatchMaker {
                 Player a = lobby.take();
                 Player b = lobby.take();
 
-                if (a.isClosed()) { requeueOrDrop(b); continue; }
-                if (b.isClosed()) { requeueOrDrop(a); continue; }
+                if (a.isClosed()) {
+                    requeueOrDrop(b);
+                    continue;
+                }
+                if (b.isClosed()) {
+                    requeueOrDrop(a);
+                    continue;
+                }
 
                 sessionPool.execute(new GameSession(a, b));
             } catch (InterruptedException e) {

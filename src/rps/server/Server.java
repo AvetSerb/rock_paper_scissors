@@ -1,4 +1,7 @@
-package rps;
+package rps.server;
+
+import rps.game.ConnectionHandler;
+import rps.game.MatchMaker;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -28,17 +31,9 @@ public final class Server {
 
         this.serverSocket = new ServerSocket(port);
         this.serverSocket.setReuseAddress(true);
-
-        // Accept loop on a single thread; client handlers on a pool.
         this.acceptorPool = Executors.newSingleThreadExecutor(named("acceptor"));
-
-        // Use virtual threads if available (Java 21+), else fallback to a cached pool.
         this.clientPool = Threading.clientExecutor(named("client"));
-
-        // start acceptor
         acceptorPool.execute(this::acceptLoop);
-
-        // block main thread
         blockUntilStopped();
     }
 
@@ -47,7 +42,7 @@ public final class Server {
             try {
                 Socket socket = serverSocket.accept();
                 socket.setTcpNoDelay(true);
-                socket.setSoTimeout((int) Duration.ofHours(2).toMillis()); // defensive
+                socket.setSoTimeout((int) Duration.ofHours(2).toMillis());
                 clientPool.execute(new ConnectionHandler(socket, matchMaker));
             } catch (IOException e) {
                 if (running.get()) {
@@ -58,7 +53,6 @@ public final class Server {
     }
 
     private void blockUntilStopped() {
-        // Busy-wait with sleep to avoid extra primitives; shutdown hook triggers stop()
         while (running.get()) {
             try {
                 Thread.sleep(250);
@@ -74,7 +68,8 @@ public final class Server {
 
         try {
             if (serverSocket != null) serverSocket.close();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
 
         matchMaker.shutdown();
 

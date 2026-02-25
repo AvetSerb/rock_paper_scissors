@@ -1,7 +1,8 @@
-package rps;
+package rps.server;
 
 public class Arguments {
-    private Arguments() {}
+    private Arguments() {
+    }
 
     public static int parsePort(String[] args, int defaultPort) {
         for (int i = 0; i < args.length; i++) {
